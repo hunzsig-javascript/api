@@ -1,11 +1,11 @@
 import {message} from 'antd';
-import Foundation from 'foundation';
-import Auth from './Auth';
+import {Parse} from 'foundation';
+import Auth from './../Auth';
 import Crypto from './Crypto';
 
 const ApiSave = (key, res) => {
   try {
-    localStorage[key] = Foundation.jsonEncode(res);
+    localStorage[key] = Parse.jsonEncode(res);
     localStorage[`${key}#EXPIRE`] = (new Date()).getTime() + 6e4;
   } catch (e) {
     localStorage.clear();
@@ -15,7 +15,7 @@ const ApiLoad = (key) => {
   if (localStorage[`${key}#EXPIRE`] === undefined || localStorage[`${key}#EXPIRE`] < (new Date()).getTime()) {
     localStorage[key] = null;
   }
-  return localStorage[key] ? Foundation.jsonDecode(localStorage[key]) : null;
+  return localStorage[key] ? Parse.jsonDecode(localStorage[key]) : null;
 };
 
 const ApiSocket = { /* host: obj */};
@@ -55,7 +55,7 @@ const Socket = {
       }
     };
     ApiSocket[host].onmessage = (msg) => {
-      const result = Crypto.is(conf.crypto) ? Crypto.decode(msg.data, conf.crypto) : Foundation.jsonDecode(msg.data);
+      const result = Crypto.is(conf.crypto) ? Crypto.decode(msg.data, conf.crypto) : Parse.jsonDecode(msg.data);
       let stack = result.stack || null;
       if (stack === null) {
         message.error('stack error');
@@ -181,7 +181,7 @@ const Ws = {
     refresh = typeof refresh === 'boolean' ? refresh : false;
     conf.refresh = refresh;
     params.auth_uid = Auth.getUid();
-    const apiStack = scope + Foundation.jsonEncode(params);
+    const apiStack = scope + Parse.jsonEncode(params);
     if (refresh === false && apiStack.length < Ws.CacheKeyLimit && ApiLoad(apiStack) !== null) {
       then(ApiLoad(apiStack));
       return;
@@ -197,7 +197,7 @@ const Ws = {
     let r = {client_id: Auth.getClientId(), scope: scope, ...params};
     r.stack = `${Socket.stackIndex}#STACK#${apiStack}`;
     console.log(r);
-    r = Foundation.jsonEncode(r);
+    r = Parse.jsonEncode(r);
     Socket.send(conf, r);
   },
   runAll: (conf, refresh) => {
@@ -214,7 +214,6 @@ const Ws = {
       params.auth_uid = Auth.getUid();
     }
     let resultQty = 0;
-    // todo
     Socket.stackIndex += 1;
     if (Socket.stackIndex > Socket.stackLimit) {
       Socket.stackIndex = 0;
@@ -225,7 +224,7 @@ const Ws = {
     //
     scope.forEach((s, idx) => {
       const p = Array.isArray(params) ? params[idx] : params;
-      const apiStack = s + Foundation.jsonEncode(p);
+      const apiStack = s + Parse.jsonEncode(p);
       if (refresh === false && apiStack.length < Ws.CacheKeyLimit && ApiLoad(apiStack) !== null) {
         Socket.stack[Socket.stackIndex].apis[apiStack] = ApiLoad(apiStack);
         resultQty += 1;
@@ -233,7 +232,7 @@ const Ws = {
         let r = {client_id: Auth.getClientId(), scope: s, ...p};
         Socket.stack[Socket.stackIndex].apis[apiStack] = false;
         r.stack = `${Socket.stackIndex}#STACK#${apiStack}`;
-        r = Foundation.jsonEncode(r);
+        r = Parse.jsonEncode(r);
         Socket.send(conf, r);
       }
     });

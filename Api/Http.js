@@ -1,12 +1,12 @@
 import {message} from 'antd';
 import axios from 'axios';
-import Foundation from 'foundation';
-import Auth from './Auth';
+import {Path, Parse} from 'foundation';
+import Auth from './../Auth';
 import Crypto from './Crypto';
 
 const ApiSave = (key, res) => {
   try {
-    localStorage[key] = Foundation.jsonEncode(res);
+    localStorage[key] = Parse.jsonEncode(res);
     localStorage[`${key}#EXPIRE`] = (new Date()).getTime() + 6e4;
   } catch (e) {
     localStorage.clear();
@@ -16,7 +16,7 @@ const ApiLoad = (key) => {
   if (localStorage[`${key}#EXPIRE`] === undefined || localStorage[`${key}#EXPIRE`] < (new Date()).getTime()) {
     localStorage[key] = null;
   }
-  return localStorage[key] ? Foundation.jsonDecode(localStorage[key]) : null;
+  return localStorage[key] ? Parse.jsonDecode(localStorage[key]) : null;
 };
 
 /**
@@ -60,7 +60,7 @@ const Http = {
     const header = conf.header || {};
     refresh = typeof refresh === 'boolean' ? refresh : false;
     params.auth_uid = Auth.getUid();
-    const key = scope + Foundation.jsonEncode(params);
+    const key = scope + Parse.jsonEncode(params);
     if (refresh === false && key.length < Http.CacheKeyLimit && ApiLoad(key) !== null) {
       then(ApiLoad(key));
       return;
@@ -75,7 +75,7 @@ const Http = {
           if (typeof response.data.code === 'number' && response.data.code === 403) {
             if (Auth.getUid() !== undefined) {
               message.error(Http.TipsLogin, 2.00, () => {
-                Foundation.locationTo(Http.PathLogin);
+                Path.locationTo(Http.PathLogin);
               });
             }
             then({code: 500, response: 'limited operation', data: null});
@@ -152,7 +152,7 @@ const Http = {
     const result = [];
     let resultQty = 0;
     scope.forEach((s, idx) => {
-      const key = s + Foundation.jsonEncode(Array.isArray(params) ? params[idx] : params);
+      const key = s + Parse.jsonEncode(Array.isArray(params) ? params[idx] : params);
       if (refresh === false && key.length < Http.CacheKeyLimit && ApiLoad(key) !== null) {
         result[idx] = ApiLoad(key);
         resultQty += 1;
@@ -196,7 +196,7 @@ const Http = {
         if (hasNotAuth === true) {
           if (Auth.getUid() !== undefined) {
             message.error(Http.Tips403, 2.00, () => {
-              Foundation.locationTo(Http.PathLogin);
+              Path.locationTo(Http.PathLogin);
             });
           } else {
             message.warning('operation not permission');

@@ -1,4 +1,3 @@
-import Auth from './Auth';
 import Connect from "./Connect";
 
 /**
@@ -12,7 +11,6 @@ import Connect from "./Connect";
 const Index = {
 
   setting: {},
-  auth: Auth,
 
   /**
    * 配置host
