@@ -58,6 +58,7 @@ const Http = {
     };
     const crypto = conf.crypto || null;
     const header = conf.header || {};
+    const queryType = conf.queryType || 'post';
     refresh = typeof refresh === 'boolean' ? refresh : false;
     params.auth_uid = Auth.getUid();
     const key = scope + Parse.jsonEncode(params);
@@ -65,8 +66,13 @@ const Http = {
       then(ApiLoad(key));
       return;
     }
-    axios
-      .post(host, Crypto.encode({client_id: Auth.getClientId(), scope: scope, ...params}, crypto), header)
+
+    axios({
+      method: queryType,
+      url: host,
+      data: Crypto.encode({client_id: Auth.getClientId(), scope: scope, ...params}, crypto),
+      config: header
+    })
       .then((response) => {
         if (Crypto.is(crypto)) {
           response.data = Crypto.decode(response.data, crypto);
