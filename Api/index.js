@@ -22,7 +22,7 @@ const Index = {
    * @param crypto 加密方式
    * @param append 附加参数
    */
-  set: (key, host, type = 'http', isHash = false, routerType = 'scope', crypto = null, append = null) => {
+  config: (key, host, type = 'http', isHash = false, routerType = 'scope', crypto = null, append = null) => {
     Index.setting[key] = {
       host: host,
       type: type.toLowerCase(),
@@ -34,7 +34,7 @@ const Index = {
   },
 
   /**
-   *
+   * mixed query
    * @param queryType
    * @param apiUniqueKey
    * @returns {Query}
@@ -46,6 +46,60 @@ const Index = {
     }
     setting.queryType = queryType;
     return new Query(setting);
+  },
+
+  /**
+   * get query
+   * @param apiUniqueKey
+   * @returns {*|Query}
+   */
+  get: (apiUniqueKey = 'default') => {
+    return Index.query('get', apiUniqueKey);
+  },
+
+  /**
+   * post query
+   * @param apiUniqueKey
+   * @returns {*|Query}
+   */
+  post: (apiUniqueKey = 'default') => {
+    return Index.query('post', apiUniqueKey);
+  },
+
+  /**
+   * put query
+   * @param apiUniqueKey
+   * @returns {*|Query}
+   */
+  put: (apiUniqueKey = 'default') => {
+    return Index.query('put', apiUniqueKey);
+  },
+
+  /**
+   * delete query
+   * @param apiUniqueKey
+   * @returns {*|Query}
+   */
+  delete: (apiUniqueKey = 'default') => {
+    return Index.query('delete', apiUniqueKey);
+  },
+
+  /**
+   * patch query
+   * @param apiUniqueKey
+   * @returns {*|Query}
+   */
+  patch: (apiUniqueKey = 'default') => {
+    return Index.query('patch', apiUniqueKey);
+  },
+
+  /**
+   * head query
+   * @param apiUniqueKey
+   * @returns {*|Query}
+   */
+  head: (apiUniqueKey = 'default') => {
+    return Index.query('head', apiUniqueKey);
   },
 
 };
