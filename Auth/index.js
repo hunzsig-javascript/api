@@ -1,15 +1,4 @@
-const randCharArr = '1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_~!@$[]-·';
-const randNum = (Min, Max) => {
-  return (Min + Math.round(Math.random() * (Max - Min)));
-};
-const randChar = (length) => {
-  let char = '';
-  while (length > 0) {
-    char += randCharArr[randNum(0, randCharArr.length - 1)];
-    length -= 1;
-  }
-  return char;
-};
+import nanoid from 'nanoid';
 
 const Auth = {
   uid: '_HU1359',
@@ -50,7 +39,7 @@ const Auth = {
    */
   getClientId: () => {
     if (localStorage.cid === undefined) {
-      localStorage.cid = randChar(128) + (new Date()).getTime().toString() + randChar(128);
+      localStorage.cid = nanoid(42) + (new Date()).getTime().toString(36);
     }
     return localStorage.cid;
   },
