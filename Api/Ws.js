@@ -1,5 +1,5 @@
 import {message} from 'antd';
-import {Parse} from 'foundation';
+import {Parse, I18n} from 'foundation';
 import Auth from './../Auth';
 import Crypto from './Crypto';
 
@@ -45,7 +45,7 @@ const Socket = {
       console.log('connection');
       console.log((new Date()).getMinutes() + ':' + (new Date()).getSeconds());
       message.destroy();
-      message.info('connect server success');
+      message.info(I18n('CONNECT_SERVER_SUCCESS'));
       if (Socket.queue.length > 0) {
         let q = Socket.queue.shift();
         while (q !== undefined) {
@@ -153,15 +153,15 @@ const Socket = {
 const Ws = {
   CacheKeyLimit: 3000,
   PathLogin: null,
-  TipsLogin: 'login timeout',
-  Tips403: 'login timeout or not permission',
+  TipsLogin: I18n('LOGIN_TIMEOUT'),
+  Tips403: I18n('LOGIN_TIMEOUT_OR_NOT_PERMISSION'),
   cache: (conf) => {
     if (Array.isArray(conf.scope)) {
       Ws.runAll(conf, false);
     } else if (typeof conf.scope === 'string') {
       Ws.run(conf, false);
     } else {
-      message.error('scope error');
+      message.error(I18n('SCOPE_ERROR'));
     }
   },
   real: (conf) => {
@@ -170,7 +170,7 @@ const Ws = {
     } else if (typeof conf.scope === 'string') {
       Ws.run(conf, true);
     } else {
-      message.error('scope error');
+      message.error(I18n('SCOPE_ERROR'));
     }
   },
   run: (conf, refresh) => {

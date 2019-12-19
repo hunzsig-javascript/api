@@ -1,6 +1,6 @@
 import {message} from 'antd';
 import axios from 'axios';
-import {Path, Parse} from 'foundation';
+import {Path, Parse, I18n} from 'foundation';
 import Auth from './../Auth';
 import Crypto from './Crypto';
 
@@ -30,15 +30,15 @@ const ApiLoad = (key) => {
 const Http = {
   CacheKeyLimit: 3000,
   PathLogin: null,
-  TipsLogin: 'login timeout',
-  Tips403: 'login timeout or has not permission',
+  TipsLogin: I18n('LOGIN_TIMEOUT'),
+  Tips403: I18n('LOGIN_TIMEOUT_OR_NOT_PERMISSION'),
   cache: (conf) => {
     if (Array.isArray(conf.scope)) {
       Http.runAll(conf, false);
     } else if (typeof conf.scope === 'string') {
       Http.run(conf, false);
     } else {
-      message.error('scope error');
+      message.error(I18n('SCOPE_ERROR'));
     }
   },
   real: (conf) => {
@@ -47,7 +47,7 @@ const Http = {
     } else if (typeof conf.scope === 'string') {
       Http.run(conf, true);
     } else {
-      message.error('scope error');
+      message.error(I18n('SCOPE_ERROR'));
     }
   },
   run: (conf, refresh) => {
@@ -84,7 +84,7 @@ const Http = {
                 Path.locationTo(Http.PathLogin);
               });
             }
-            then({code: 500, response: 'limited operation', data: null});
+            then({code: 500, response: I18n('LIMITED_OPERATION'), data: null});
             return;
           }
           then(response.data);
@@ -92,47 +92,47 @@ const Http = {
             ApiSave(key, response.data);
           }
         } else {
-          then({code: 500, response: 'api error', data: null});
+          then({code: 500, response: I18n('API_ERROR'), data: null});
         }
       })
       .catch((error) => {
         const status = (error.response && error.response.status) ? error.response.status : -1;
         switch (status) {
           case 400:
-            error.message = 'api error query';
+            error.message = I18n('API_ERROR_QUERY');
             break;
           case 401:
-            error.message = 'api error not auth';
+            error.message = I18n('API_ERROR_NOT_AUTH');
             break;
           case 403:
-            error.message = 'api error reject';
+            error.message = I18n('API_ERROR_REJECT');
             break;
           case 404:
-            error.message = 'api error abort';
+            error.message = I18n('API_ERROR_ABORT');
             break;
           case 408:
-            error.message = 'api error timeout';
+            error.message = I18n('API_ERROR_TIMEOUT');
             break;
           case 500:
-            error.message = 'api error server';
+            error.message = I18n('API_ERROR_SERVER');
             break;
           case 501:
-            error.message = 'api error not service';
+            error.message = I18n('API_ERROR_NOT_SERVICE');
             break;
           case 502:
-            error.message = 'api error net';
+            error.message = I18n('API_ERROR_NET');
             break;
           case 503:
-            error.message = 'api error service disable';
+            error.message = I18n('API_ERROR_SERVICE_DISABLE');
             break;
           case 504:
-            error.message = 'api error net timeout';
+            error.message = I18n('API_ERROR_NET_TIMEOUT');
             break;
           case 505:
-            error.message = 'api error not support http';
+            error.message = I18n('API_ERROR_NOT_SUPPORT_HTTP');
             break;
           default:
-            error.message = `api error default (${status})!`;
+            error.message = I18n('API_ERROR_DEFAULT') + `(${status})!`;
         }
         then({code: status, response: error.message, data: null});
       });
@@ -196,7 +196,7 @@ const Http = {
               }
             }
           } else {
-            result[pushIdx] = {code: 500, response: 'api error', data: null};
+            result[pushIdx] = {code: 500, response: I18n('API_ERROR'), data: null};
           }
         });
         if (hasNotAuth === true) {
@@ -205,7 +205,7 @@ const Http = {
               Path.locationTo(Http.PathLogin);
             });
           } else {
-            message.warning('operation not permission');
+            message.warning(I18n('OPERATION_NOT_PERMISSION'));
           }
         } else {
           then(result);
