@@ -1,5 +1,5 @@
-import {message} from 'antd';
-import {Parse, I18n} from 'foundation';
+import { message } from 'antd';
+import { Parse, I18n } from 'basic';
 import Auth from './../Auth';
 import Crypto from './Crypto';
 
@@ -18,7 +18,7 @@ const ApiLoad = (key) => {
   return localStorage[key] ? Parse.jsonDecode(localStorage[key]) : null;
 };
 
-const ApiSocket = { /* host: obj */};
+const ApiSocket = { /* host: obj */ };
 const Socket = {
   stack: {},
   stackIndex: 0,
@@ -58,14 +58,14 @@ const Socket = {
       const result = Crypto.is(conf.crypto) ? Crypto.decode(msg.data, conf.crypto) : Parse.jsonDecode(msg.data);
       let stack = result.stack || null;
       if (stack === null) {
-        message.error('stack error');
+        message.error(I18n('STACK_ERROR'));
         return;
       }
       stack = stack.split('#STACK#');
       const stackIndex = stack[0];
       const stackKey = stack[1];
       if (typeof Socket.stack[stackIndex].then !== 'function') {
-        message.error('stack then error');
+        message.error(I18n("STACK_THEN_ERROR"));
         return;
       }
       Socket.stack[stackIndex].apis[stackKey] = result;
@@ -86,7 +86,7 @@ const Socket = {
                 ApiSave(key, res);
               }
             } else {
-              response.push({code: 500, response: 'api error', data: null});
+              response.push({ code: 500, msg: I18n('API_ERROR'), data: null });
             }
           }
         });
@@ -97,7 +97,7 @@ const Socket = {
               location.href = Ws.PathLogin;
             });
           } else {
-            message.warning('operation not permission');
+            message.warning(I18n('OPERATION_NOT_PERMISSION'));
           }
         } else {
           const then = Socket.stack[stackIndex].then;
@@ -126,17 +126,17 @@ const Socket = {
       if (ApiSocket[host].readyState === Socket.state.OPEN) {
         ApiSocket[host].send(Crypto.encode(params, conf.crypto));
       } else if (ApiSocket[host].readyState === Socket.state.CONNECTING) {
-        message.loading('connect server trying');
+        message.loading(I18n('CONNECT_SERVER_TRYING'));
         Socket.queue.push(params);
       } else if (ApiSocket[host].readyState === Socket.state.CLOSING) {
-        message.warning('connect server closing');
+        message.warning(I18n('CONNECT_SERVER_CLOSING'));
         Socket.queue.push(params);
       } else if (ApiSocket[host].readyState === Socket.state.CLOSED) {
-        message.error('connect server closed');
+        message.error(I18n('CONNECT_SERVER_CLOSED'));
         Socket.queue.push(params);
       }
     } else {
-      message.error('connect server could not access');
+      message.error(I18n("CONNECT_SERVER_COULD_NOT_ACCESS"));
       Socket.queue.push(params);
     }
   },
@@ -194,7 +194,7 @@ const Ws = {
     Socket.stack[Socket.stackIndex].then = then;
     Socket.stack[Socket.stackIndex].apis = {};
     Socket.stack[Socket.stackIndex].apis[apiStack] = false;
-    let r = {client_id: Auth.getClientId(), scope: scope, ...params};
+    let r = { client_id: Auth.getClientId(), scope: scope, ...params };
     r.stack = `${Socket.stackIndex}#STACK#${apiStack}`;
     console.log(r);
     r = Parse.jsonEncode(r);
@@ -229,7 +229,7 @@ const Ws = {
         Socket.stack[Socket.stackIndex].apis[apiStack] = ApiLoad(apiStack);
         resultQty += 1;
       } else {
-        let r = {client_id: Auth.getClientId(), scope: s, ...p};
+        let r = { client_id: Auth.getClientId(), scope: s, ...p };
         Socket.stack[Socket.stackIndex].apis[apiStack] = false;
         r.stack = `${Socket.stackIndex}#STACK#${apiStack}`;
         r = Parse.jsonEncode(r);

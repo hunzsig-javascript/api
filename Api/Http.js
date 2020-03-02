@@ -1,6 +1,6 @@
-import {message} from 'antd';
+import { message } from 'antd';
 import axios from 'axios';
-import {Path, Parse, I18n} from 'foundation';
+import { Path, Parse, I18n } from 'basic';
 import Auth from './../Auth';
 import Crypto from './Crypto';
 
@@ -70,7 +70,7 @@ const Http = {
     axios({
       method: queryType,
       url: host,
-      data: Crypto.encode({client_id: Auth.getClientId(), scope: scope, ...params}, crypto),
+      data: Crypto.encode({ client_id: Auth.getClientId(), scope: scope, ...params }, crypto),
       config: header
     })
       .then((response) => {
@@ -84,7 +84,7 @@ const Http = {
                 Path.locationTo(Http.PathLogin);
               });
             }
-            then({code: 500, response: I18n('LIMITED_OPERATION'), data: null});
+            then({ code: 500, msg: I18n('LIMITED_OPERATION'), data: null });
             return;
           }
           then(response.data);
@@ -92,7 +92,7 @@ const Http = {
             ApiSave(key, response.data);
           }
         } else {
-          then({code: 500, response: I18n('API_ERROR'), data: null});
+          then({ code: 500, msg: I18n('API_ERROR'), data: null });
         }
       })
       .catch((error) => {
@@ -134,7 +134,7 @@ const Http = {
           default:
             error.message = I18n('API_ERROR_DEFAULT') + `(${status})!`;
         }
-        then({code: status, response: error.message, data: null});
+        then({ code: status, msg: error.message, data: null });
       });
   },
   runAll: (conf, refresh) => {
@@ -196,7 +196,7 @@ const Http = {
               }
             }
           } else {
-            result[pushIdx] = {code: 500, response: I18n('API_ERROR'), data: null};
+            result[pushIdx] = { code: 500, response: I18n('API_ERROR'), data: null };
           }
         });
         if (hasNotAuth === true) {
