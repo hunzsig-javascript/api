@@ -30,8 +30,6 @@ const ApiLoad = (key) => {
 const Http = {
   CacheKeyLimit: 3000,
   PathLogin: null,
-  TipsLogin: I18n('LOGIN_TIMEOUT'),
-  Tips403: I18n('LOGIN_TIMEOUT_OR_NOT_PERMISSION'),
   cache: (conf) => {
     if (Array.isArray(conf.scope)) {
       Http.runAll(conf, false);
@@ -80,7 +78,7 @@ const Http = {
         if (typeof response.data === 'object') {
           if (typeof response.data.code === 'number' && response.data.code === 403) {
             if (Auth.getUid() !== undefined) {
-              message.error(Http.TipsLogin, 2.00, () => {
+              message.error(I18n('LOGIN_TIMEOUT'), 2.00, () => {
                 alert(1);
                 Path.locationTo(Http.PathLogin);
               });
@@ -202,7 +200,7 @@ const Http = {
         });
         if (hasNotAuth === true) {
           if (Auth.getUid() !== undefined) {
-            message.error(Http.Tips403, 2.00, () => {
+            message.error(I18n('LOGIN_TIMEOUT_OR_NOT_PERMISSION'), 2.00, () => {
               alert(2);
               Path.locationTo(Http.PathLogin);
             });

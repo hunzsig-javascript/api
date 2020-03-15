@@ -93,7 +93,7 @@ const Socket = {
       if (totalFinish === true) {
         if (hasNotAuth === true) {
           if (Auth.getUid() !== undefined) {
-            message.error(Ws.Tips403, 2.00, () => {
+            message.error(I18n('LOGIN_TIMEOUT_OR_NOT_PERMISSION'), 2.00, () => {
               location.href = Ws.PathLogin;
             });
           } else {
@@ -153,8 +153,6 @@ const Socket = {
 const Ws = {
   CacheKeyLimit: 3000,
   PathLogin: null,
-  TipsLogin: I18n('LOGIN_TIMEOUT'),
-  Tips403: I18n('LOGIN_TIMEOUT_OR_NOT_PERMISSION'),
   cache: (conf) => {
     if (Array.isArray(conf.scope)) {
       Ws.runAll(conf, false);
