@@ -1,19 +1,19 @@
-import { message } from 'antd';
+import {message} from 'antd';
 import axios from 'axios';
-import { Path, Parse, I18n } from 'basic';
+import {Path, Parse, I18n} from 'basic';
 import Auth from './../Auth';
 import Crypto from './Crypto';
 
 const ApiSave = (key, res) => {
   try {
     localStorage[key] = Parse.jsonEncode(res);
-    localStorage[`${key}#EXPIRE`] = (new Date()).getTime() + 6e4;
+    localStorage[`${key}#EX`] = (new Date()).getTime() + 6e4;
   } catch (e) {
     localStorage.clear();
   }
 };
 const ApiLoad = (key) => {
-  if (localStorage[`${key}#EXPIRE`] === undefined || localStorage[`${key}#EXPIRE`] < (new Date()).getTime()) {
+  if (localStorage[`${key}#EX`] === undefined || localStorage[`${key}#EX`] < (new Date()).getTime()) {
     localStorage[key] = null;
   }
   return localStorage[key] ? Parse.jsonDecode(localStorage[key]) : null;
@@ -70,7 +70,7 @@ const Http = {
     axios({
       method: queryType,
       url: host,
-      data: Crypto.encode({ client_id: Auth.getClientId(), scope: scope, ...params }, crypto),
+      data: Crypto.encode({client_id: Auth.getClientId(), scope: scope, ...params}, crypto),
       config: header
     })
       .then((response) => {
@@ -81,10 +81,11 @@ const Http = {
           if (typeof response.data.code === 'number' && response.data.code === 403) {
             if (Auth.getUid() !== undefined) {
               message.error(Http.TipsLogin, 2.00, () => {
+                alert(1);
                 Path.locationTo(Http.PathLogin);
               });
             }
-            then({ code: 500, msg: I18n('LIMITED_OPERATION'), data: null });
+            then({code: 500, msg: I18n('LIMITED_OPERATION'), data: null});
             return;
           }
           then(response.data);
@@ -92,7 +93,7 @@ const Http = {
             ApiSave(key, response.data);
           }
         } else {
-          then({ code: 500, msg: I18n('API_ERROR'), data: null });
+          then({code: 500, msg: I18n('API_ERROR'), data: null});
         }
       })
       .catch((error) => {
@@ -134,7 +135,7 @@ const Http = {
           default:
             error.message = I18n('API_ERROR_DEFAULT') + `(${status})!`;
         }
-        then({ code: status, msg: error.message, data: null });
+        then({code: status, msg: error.message, data: null});
       });
   },
   runAll: (conf, refresh) => {
@@ -196,12 +197,13 @@ const Http = {
               }
             }
           } else {
-            result[pushIdx] = { code: 500, response: I18n('API_ERROR'), data: null };
+            result[pushIdx] = {code: 500, response: I18n('API_ERROR'), data: null};
           }
         });
         if (hasNotAuth === true) {
           if (Auth.getUid() !== undefined) {
             message.error(Http.Tips403, 2.00, () => {
+              alert(2);
               Path.locationTo(Http.PathLogin);
             });
           } else {

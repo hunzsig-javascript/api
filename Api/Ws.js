@@ -1,24 +1,24 @@
-import { message } from 'antd';
-import { Parse, I18n } from 'basic';
+import {message} from 'antd';
+import {Parse, I18n} from 'basic';
 import Auth from './../Auth';
 import Crypto from './Crypto';
 
 const ApiSave = (key, res) => {
   try {
     localStorage[key] = Parse.jsonEncode(res);
-    localStorage[`${key}#EXPIRE`] = (new Date()).getTime() + 6e4;
+    localStorage[`${key}#EX`] = (new Date()).getTime() + 6e4;
   } catch (e) {
     localStorage.clear();
   }
 };
 const ApiLoad = (key) => {
-  if (localStorage[`${key}#EXPIRE`] === undefined || localStorage[`${key}#EXPIRE`] < (new Date()).getTime()) {
+  if (localStorage[`${key}#EX`] === undefined || localStorage[`${key}#EX`] < (new Date()).getTime()) {
     localStorage[key] = null;
   }
   return localStorage[key] ? Parse.jsonDecode(localStorage[key]) : null;
 };
 
-const ApiSocket = { /* host: obj */ };
+const ApiSocket = { /* host: obj */};
 const Socket = {
   stack: {},
   stackIndex: 0,
@@ -86,7 +86,7 @@ const Socket = {
                 ApiSave(key, res);
               }
             } else {
-              response.push({ code: 500, msg: I18n('API_ERROR'), data: null });
+              response.push({code: 500, msg: I18n('API_ERROR'), data: null});
             }
           }
         });
@@ -194,7 +194,7 @@ const Ws = {
     Socket.stack[Socket.stackIndex].then = then;
     Socket.stack[Socket.stackIndex].apis = {};
     Socket.stack[Socket.stackIndex].apis[apiStack] = false;
-    let r = { client_id: Auth.getClientId(), scope: scope, ...params };
+    let r = {client_id: Auth.getClientId(), scope: scope, ...params};
     r.stack = `${Socket.stackIndex}#STACK#${apiStack}`;
     console.log(r);
     r = Parse.jsonEncode(r);
@@ -229,7 +229,7 @@ const Ws = {
         Socket.stack[Socket.stackIndex].apis[apiStack] = ApiLoad(apiStack);
         resultQty += 1;
       } else {
-        let r = { client_id: Auth.getClientId(), scope: s, ...p };
+        let r = {client_id: Auth.getClientId(), scope: s, ...p};
         Socket.stack[Socket.stackIndex].apis[apiStack] = false;
         r.stack = `${Socket.stackIndex}#STACK#${apiStack}`;
         r = Parse.jsonEncode(r);
