@@ -79,7 +79,6 @@ const Http = {
           if (typeof response.data.code === 'number' && response.data.code === 403) {
             if (Auth.getUid() !== undefined) {
               message.error(I18n('LOGIN_TIMEOUT'), 2.00, () => {
-                alert(1);
                 Path.locationTo(Http.PathLogin);
               });
             }
@@ -201,7 +200,6 @@ const Http = {
         if (hasNotAuth === true) {
           if (Auth.getUid() !== undefined) {
             message.error(I18n('LOGIN_TIMEOUT_OR_NOT_PERMISSION'), 2.00, () => {
-              alert(2);
               Path.locationTo(Http.PathLogin);
             });
           } else {
